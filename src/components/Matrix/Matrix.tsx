@@ -33,29 +33,41 @@ const SUPER_WEIGHTED = ['purchasing_power', 'language_barrier', 'career_opportun
 // Nationality-specific multipliers for criteria
 const NATIONALITY_MULTIPLIERS: Record<string, Record<string, number>> = {
   US: {
-    language_barrier: 0.7, // English-speaking advantage
-    passport_strength: 0.9, // Very strong passport, but less critical
-    visa_ease: 0.85, // Strong US passport for visa-free travel
-    tax_rate: 1.3, // FATCA makes taxes worse abroad
-    expat_community: 0.8, // Large US expat communities everywhere
+    language_barrier: 0.6, // English-speaking advantage (-40%)
+    passport_strength: 0.8, // Very strong, less discriminating (-20%)
+    visa_ease: 0.15, // Visa-free almost everywhere, essentially irrelevant (-85%)
+    tax_rate: 1.3, // FATCA makes taxes worse abroad (+30%)
+    expat_community: 0.8, // Large US expat communities everywhere (-20%)
   },
   UA: {
-    language_barrier: 1.1, // Ukrainian/Russian advantage in Eastern Europe only
-    passport_strength: 1.2, // Weaker passport, more relevant
-    visa_ease: 1.3, // Limited visa-free access
-    tax_rate: 0.9, // Tax residency benefits if relocate
-    expat_community: 1.1, // Smaller communities outside Ukraine
+    language_barrier: 1.1, // Ukrainian/Russian helps in Eastern Europe only (+10%)
+    passport_strength: 1.5, // Much weaker passport, highly relevant (+50%)
+    visa_ease: 1.5, // Very limited visa-free access, critical factor (+50%)
+    tax_rate: 0.9, // Tax residency benefits if relocate (-10%)
+    expat_community: 1.1, // Smaller communities outside Ukraine (+10%)
   },
   GB: {
-    language_barrier: 0.6, // English speaker - big advantage
-    passport_strength: 0.85, // Very strong passport
-    visa_ease: 0.8, // Good visa access
-    expat_community: 0.7, // Large British expat networks
+    language_barrier: 0.6, // English speaker - big advantage (-40%)
+    passport_strength: 0.8, // Very strong passport, less relevant (-20%)
+    visa_ease: 0.25, // Strong visa access, less discriminating (-75%)
+    expat_community: 0.7, // Large British expat networks (-30%)
   },
   DE: {
-    language_barrier: 1.0, // German helps in Germany, not globally
-    passport_strength: 0.85,
-    visa_ease: 0.85,
+    language_barrier: 1.0, // German helps in Germany, not globally (no change)
+    passport_strength: 0.8, // Strong, less critical (-20%)
+    visa_ease: 0.3, // Strong visa access, less relevant (-70%)
+  },
+  CA: {
+    language_barrier: 0.6, // English/French speaker (-40%)
+    passport_strength: 0.8, // Very strong (-20%)
+    visa_ease: 0.2, // Visa-free almost everywhere (-80%)
+    expat_community: 0.7, // Large Canadian expat networks (-30%)
+  },
+  AU: {
+    language_barrier: 0.6, // English speaker (-40%)
+    passport_strength: 0.8, // Very strong (-20%)
+    visa_ease: 0.2, // Visa-free almost everywhere (-80%)
+    expat_community: 0.7, // Large Australian expat networks (-30%)
   },
 };
 
