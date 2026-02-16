@@ -4,7 +4,7 @@ import { useProfiles, Profile } from '../../hooks/useProfiles';
 interface MyProfilesProps {
   userId: string | null;
   onSelectProfile: (profile: Profile) => void;
-  onLoadProfile: (weights: Record<string, number>, cities: string[], salary: number) => void;
+  onLoadProfile: (weights: Record<string, number>, cities: string[], salary: number, nationality?: string) => void;
 }
 
 export const MyProfiles: React.FC<MyProfilesProps> = ({ userId, onSelectProfile, onLoadProfile }) => {
@@ -66,12 +66,15 @@ export const MyProfiles: React.FC<MyProfilesProps> = ({ userId, onSelectProfile,
               </span>
             </div>
 
-            <div className="mb-3">
-              <p className="text-xs text-slate-600 mb-2">
-                Salary: ${profile.salary_usd.toLocaleString()}
+            <div className="mb-3 space-y-1">
+              <p className="text-xs text-slate-600">
+                🌐 Nationality: {profile.nationality || 'US'}
               </p>
               <p className="text-xs text-slate-600">
-                Cities: {profile.cities.length} selected
+                💰 Salary: ${profile.salary_usd.toLocaleString()}
+              </p>
+              <p className="text-xs text-slate-600">
+                🏙️ Cities: {profile.cities.length} selected
               </p>
             </div>
 
@@ -79,7 +82,7 @@ export const MyProfiles: React.FC<MyProfilesProps> = ({ userId, onSelectProfile,
               <button
                 onClick={() => {
                   onSelectProfile(profile);
-                  onLoadProfile(profile.weights, profile.cities, profile.salary_usd);
+                  onLoadProfile(profile.weights, profile.cities, profile.salary_usd, profile.nationality);
                 }}
                 className="flex-1 px-3 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
               >

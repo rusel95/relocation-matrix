@@ -8,6 +8,7 @@ export interface Profile {
   weights: Record<string, number>;
   cities: string[];
   salary_usd: number;
+  nationality?: string;
   created_at: string;
   updated_at: string;
 }
@@ -53,7 +54,7 @@ export const useProfiles = (userId: string | null) => {
 
   // Create new profile
   const createProfile = useCallback(
-    async (name: string, weights: Record<string, number>, cities: string[], salary_usd: number) => {
+    async (name: string, weights: Record<string, number>, cities: string[], salary_usd: number, nationality?: string) => {
       if (!userId) return;
       try {
         const { data, error } = await supabase
@@ -65,6 +66,7 @@ export const useProfiles = (userId: string | null) => {
               weights,
               cities,
               salary_usd,
+              nationality,
             },
           ])
           .select()

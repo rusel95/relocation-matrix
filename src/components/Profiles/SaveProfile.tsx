@@ -6,6 +6,7 @@ interface SaveProfileProps {
   weights: Record<string, number>;
   cities: string[];
   salary: number;
+  nationality: string;
   onSaved: () => void;
 }
 
@@ -14,6 +15,7 @@ export const SaveProfile: React.FC<SaveProfileProps> = ({
   weights,
   cities,
   salary,
+  nationality,
   onSaved,
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +30,7 @@ export const SaveProfile: React.FC<SaveProfileProps> = ({
 
     setIsLoading(true);
     try {
-      await createProfile(name, weights, cities, salary);
+      await createProfile(name, weights, cities, salary, nationality);
       setName('');
       setDescription('');
       setShowModal(false);
@@ -95,6 +97,9 @@ export const SaveProfile: React.FC<SaveProfileProps> = ({
               </div>
 
               <div className="bg-slate-50 p-3 rounded-lg text-sm">
+                <p className="text-slate-700">
+                  <strong>Nationality:</strong> {nationality}
+                </p>
                 <p className="text-slate-700">
                   <strong>Salary:</strong> ${salary.toLocaleString()}/year
                 </p>

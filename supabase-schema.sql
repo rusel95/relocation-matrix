@@ -39,6 +39,7 @@ CREATE TABLE profiles (
   }',
   cities TEXT[] NOT NULL, -- ['Singapore', 'Austin', ...]
   salary_usd INTEGER DEFAULT 100000, -- For personalized purchasing power
+  nationality TEXT DEFAULT 'US', -- User nationality for criteria adjustments
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

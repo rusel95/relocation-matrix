@@ -30,6 +30,38 @@ const DEFAULT_WEIGHTS: Weights = {
 
 const SUPER_WEIGHTED = ['purchasing_power', 'language_barrier', 'career_opportunities', 'visa_ease'];
 
+// Nationality-specific multipliers for criteria
+const NATIONALITY_MULTIPLIERS: Record<string, Record<string, number>> = {
+  US: {
+    language_barrier: 0.7, // English-speaking advantage
+    passport_strength: 0.9, // Very strong passport, but less critical
+    visa_ease: 0.85, // Strong US passport for visa-free travel
+    tax_rate: 1.3, // FATCA makes taxes worse abroad
+    expat_community: 0.8, // Large US expat communities everywhere
+  },
+  UA: {
+    language_barrier: 1.1, // Ukrainian/Russian advantage in Eastern Europe only
+    passport_strength: 1.2, // Weaker passport, more relevant
+    visa_ease: 1.3, // Limited visa-free access
+    tax_rate: 0.9, // Tax residency benefits if relocate
+    expat_community: 1.1, // Smaller communities outside Ukraine
+  },
+  GB: {
+    language_barrier: 0.6, // English speaker - big advantage
+    passport_strength: 0.85, // Very strong passport
+    visa_ease: 0.8, // Good visa access
+    expat_community: 0.7, // Large British expat networks
+  },
+  DE: {
+    language_barrier: 1.0, // German helps in Germany, not globally
+    passport_strength: 0.85,
+    visa_ease: 0.85,
+  },
+};
+
+const DEFAULT_NATIONALITY = 'US';
+const NATIONALITIES = ['US', 'UA', 'GB', 'DE', 'CA', 'AU', 'Other'];
+
 interface City {
   rank: number;
   name: string;
@@ -48,27 +80,36 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
   const [weights, setWeights] = useState<Weights>(DEFAULT_WEIGHTS);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [salary, setSalary] = useState(100000);
+  const [nationality, setNationality] = useState<string>(DEFAULT_NATIONALITY);
   const [showProfiles, setShowProfiles] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Get nationality-specific multiplier
+  const getNationalityMultiplier = (criterion: string): number => {
+    return NATIONALITY_MULTIPLIERS[nationality]?.[criterion] ?? 1.0;
+  };
 
   // Calculate dynamic scores
   const rankedCities = useMemo(() => {
     return (citiesData as City[])
       .map(city => {
         let score = 0;
-        const details: { criteria: string; score: number; weight: number }[] = [];
+        const details: { criteria: string; score: number; weight: number; nationalityMultiplier: number }[] = [];
 
         Object.entries(weights).forEach(([key, weight]) => {
           const cityCriteriaScore = city.criteria[key as keyof typeof city.criteria] || 5;
           const isSuper = SUPER_WEIGHTED.includes(key);
-          const multiplier = isSuper ? 10 : 1;
-          const contributedScore = (cityCriteriaScore * weight * multiplier) / 10;
+          const superMultiplier = isSuper ? 10 : 1;
+          const nationalityMult = getNationalityMultiplier(key);
+          const finalScore = cityCriteriaScore * nationalityMult;
+          const contributedScore = (finalScore * weight * superMultiplier) / 10;
           
           score += contributedScore;
           details.push({
             criteria: key,
-            score: cityCriteriaScore,
+            score: finalScore,
             weight,
+            nationalityMultiplier: nationalityMult,
           });
         });
 
@@ -83,7 +124,7 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
         };
       })
       .sort((a, b) => b.score - a.score);
-  }, [weights]);
+  }, [weights, nationality]);
 
   const handleWeightChange = (key: string, value: number) => {
     setWeights(prev => ({
@@ -100,10 +141,11 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
 
   const isSuperWeighted = (key: string) => SUPER_WEIGHTED.includes(key);
 
-  const handleLoadProfile = (newWeights: Record<string, number>, newCities: string[], newSalary: number) => {
+  const handleLoadProfile = (newWeights: Record<string, number>, newCities: string[], newSalary: number, newNationality?: string) => {
     setWeights(newWeights);
     setSelectedCities(newCities);
     setSalary(newSalary);
+    if (newNationality) setNationality(newNationality);
     setShowProfiles(false);
   };
 
@@ -136,6 +178,7 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
               weights={weights}
               cities={selectedCities}
               salary={salary}
+              nationality={nationality}
               onSaved={handleProfileSaved}
             />
           </div>
@@ -155,6 +198,23 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar: Weights */}
           <div className="lg:col-span-1 space-y-6">
+            {/* Nationality Selector */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-lg font-bold text-slate-900 mb-3">🌐 Your Nationality</h2>
+              <select
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {NATIONALITIES.map(nat => (
+                  <option key={nat} value={nat}>{nat}</option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500 mt-2">
+                Criteria are adjusted based on your nationality (passport strength, visa ease, language, taxes, etc.)
+              </p>
+            </div>
+
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">⭐ Super-Weighted (×10)</h2>
               <div className="space-y-4">
