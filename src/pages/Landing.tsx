@@ -127,9 +127,9 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted }) => {
         <div className="max-w-4xl mx-auto text-center">
           <p className="mb-2">Made with 🌍 by makers who dream of relocating</p>
           <p className="text-sm">
-            <a href="#" className="hover:text-white">Privacy</a> • 
-            <a href="#" className="hover:text-white"> Terms</a> • 
-            <a href="#" className="hover:text-white"> GitHub</a>
+            <button onClick={(e) => e.preventDefault()} className="hover:text-white">Privacy</button> • 
+            <button onClick={(e) => e.preventDefault()} className="hover:text-white"> Terms</button> • 
+            <button onClick={(e) => e.preventDefault()} className="hover:text-white"> GitHub</button>
           </p>
         </div>
       </footer>

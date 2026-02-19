@@ -137,7 +137,7 @@ export const useProfiles = (userId: string | null) => {
   const createShareLink = useCallback(async (profileId: string) => {
     try {
       const shareToken = `share_${Math.random().toString(36).substring(2, 9)}`;
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('shared_profiles')
         .insert([
           {

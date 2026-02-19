@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Matrix } from './components/Matrix/Matrix';
 import { LoginModal } from './components/Auth/LoginModal';
 import { Landing } from './pages/Landing';

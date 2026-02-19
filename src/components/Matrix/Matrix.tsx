@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import citiesData from '../../data/cities.json';
 import { SaveProfile } from '../Profiles/SaveProfile';
 import { MyProfiles } from '../Profiles/MyProfiles';
-import { Profile } from '../../hooks/useProfiles';
 
 interface Weights {
   [key: string]: number;
@@ -97,9 +96,9 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Get nationality-specific multiplier
-  const getNationalityMultiplier = (criterion: string): number => {
+  const getNationalityMultiplier = useCallback((criterion: string): number => {
     return NATIONALITY_MULTIPLIERS[nationality]?.[criterion] ?? 1.0;
-  };
+  }, [nationality]);
 
   // Calculate dynamic scores
   const rankedCities = useMemo(() => {
@@ -136,7 +135,7 @@ export const Matrix: React.FC<MatrixProps> = ({ userId }) => {
         };
       })
       .sort((a, b) => b.score - a.score);
-  }, [weights, nationality]);
+  }, [weights, getNationalityMultiplier]);
 
   const handleWeightChange = (key: string, value: number) => {
     setWeights(prev => ({
